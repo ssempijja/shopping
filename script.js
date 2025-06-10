@@ -1,25 +1,4 @@
 // script.js
-/// testin thr products
-
-//simple
-//Load products and display them
-// document.addEventListener("DOMContentLoaded", () => {
-//   const productList = document.getElementById("product-list");
-//   if (productList ) {
-//     products.forEach(product => {
-//       const item = document.createElement("div");
-//       item.className = "product";
-//       item.innerHTML = `
-//         <img src="${product.image}" alt="${product.name}" />
-//         <h3>${product.name}</h3>
-//         <p>$${product.price.toFixed(2)}</p>
-//         <button onclick="addToCart(${product.id})">Add to Cart</button>
-//       `;
-//       productList.appendChild(item);
-//     });
-//   } 
-// });
-
 //complex
 var path = window.location.pathname;
 var page = path.split("/").pop();
@@ -49,25 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// var path = window.location.pathname;
-// var page = path.split("/").pop();
-// // Load products and display them
-// document.addEventListener("DOMContentLoaded", () => {
-//   const productList = document.getElementById("product-list");
-//   if (productList && page === "index.html") {
-//     products.slice(0, 4).forEach(product => {
-//       const item = document.createElement("div");
-//       item.className = "product";
-//       item.innerHTML = `
-//         <img src="${product.image}" alt="${product.name}" />
-//         <h3>${product.name}</h3>
-//         <p>$${product.price.toFixed(2)}</p>
-//         <button onclick="addToCart(${product.id})">Add to Cart</button>
-//       `;
-//       productList.appendChild(item);
-//     });
-//   } 
-// });
 
 // Add item to cart
 function addToCart(productId) {
