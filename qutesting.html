@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile QR Code Generator</title>
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #qrcode {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Profile QR Code Generator</h1>
+    
+    <div class="form-group">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="department">Department:</label>
+        <input type="text" id="department">
+    </div>
+    
+    <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone">
+    </div>
+    
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email">
+    </div>
+    
+    <div class="form-group">
+        <label for="image">Profile Image (optional):</label>
+        <input type="file" id="image" accept="image/*">
+    </div>
+    
+    <button id="generateBtn">Generate QR Code</button>
+    
+    <div id="qrcode"></div>
+    
+    <div id="result" class="hidden">
+        <button id="saveContactBtn">Save to Contacts</button>
+        <button id="downloadBtn">Download QR Code</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generateBtn');
+            const saveContactBtn = document.getElementById('saveContactBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const qrcodeDiv = document.getElementById('qrcode');
+            const resultDiv = document.getElementById('result');
+            
+            let currentQRCode = null;
+            let vCardData = '';
+            
+            generateBtn.addEventListener('click', generateQRCode);
+            saveContactBtn.addEventListener('click', saveToContacts);
+            downloadBtn.addEventListener('click', downloadQRCode);
+            
+            function generateQRCode() {
+                const name = document.getElementById('name').value;
+                const department = document.getElementById('department').value;
+                const phone = document.getElementById('phone').value;
+                const email = document.getElementById('email').value;
+                const imageFile = document.getElementById('image').files[0];
+                
+                if (!name) {
+                    alert('Please enter at least a name');
+                    return;
+                }
+                
+                // Clear previous QR code
+                qrcodeDiv.innerHTML = '';
+                if (currentQRCode) {
+                    currentQRCode.clear();
+                }
+                
+                // Create vCard data
+                vCardData = createVCard(name, department, phone, email, imageFile);
+                
+                // Generate QR code
+                currentQRCode = new QRCode(qrcodeDiv, {
+                    text: vCardData,
+                    width: 256,
+                    height: 256,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                
+                // Show result section
+                resultDiv.classList.remove('hidden');
+            }
+            
+            function createVCard(name, department, phone, email, imageFile) {
+    let vCard = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        `FN:${name}`,
+        `ORG:${department || ''}`
+    ];
+
+    if (phone) vCard.push(`TEL:${phone}`);
+    if (email) vCard.push(`EMAIL:${email}`);
+
+    if (imageFile) {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // Resize if needed
+                    const MAX_DIMENSION = 200;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+                        if (width > height) {
+                            height = height * (MAX_DIMENSION / width);
+                            width = MAX_DIMENSION;
+                        } else {
+                            width = width * (MAX_DIMENSION / height);
+                            height = MAX_DIMENSION;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const resizedBase64 = canvas.toDataURL(imageFile.type);
+                    const base64Data = resizedBase64.split(',')[1];
+                    const imageType = imageFile.type.split('/')[1].toUpperCase();
+
+                    vCard.push(`PHOTO;ENCODING=b;TYPE=${imageType}:${base64Data}`);
+                    vCard.push('END:VCARD');
+                    resolve(vCard.join('\n'));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(imageFile);
+        });
+    } else {
+        vCard.push('END:VCARD');
+        return Promise.resolve(vCard.join('\n'));
+    }
+}
+
+            
+            function saveToContacts() {
+                // Create a temporary blob with the vCard data
+                const blob = new Blob([vCardData], { type: 'text/vcard' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create a temporary anchor element to trigger the download
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'contact.vcf';
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+            }
+            
+            function downloadQRCode() {
+                if (!currentQRCode) return;
+                
+                // Get the canvas element from the QR code
+                const canvas = qrcodeDiv.querySelector('canvas');
+                if (!canvas) return;
+                
+                // Create a temporary anchor element to trigger the download
+                const a = document.createElement('a');
+                a.href = canvas.toDataURL('image/png');
+                a.download = 'profile-qr.png';
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                }, 100);
+            }
+        });
+    </script>
+</body>
+</html>

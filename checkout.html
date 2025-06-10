@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Checkout - My Store</title>
+  <style></style>
+</head>
+<body>
+  <header>
+    <h1>My Store</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="checkout.html">Checkout</a>
+    </nav>
+    <div class="cart-icon">
+     <span>Cart (<span id="cart-count">0</span>)</span>
+     </div>
+  </header>
+
+  <main>
+    <h2>Checkout</h2>
+
+    <section class="cart-summary" id="cartSummary">
+      <!-- Cart items will be rendered here -->
+    </section>
+
+    <form id="checkoutForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="address">Address</label>
+      <textarea id="address" name="address" rows="3" required></textarea>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <button type="submit">Place Order</button>
+    </form>
+
+    <div class="confirmation" id="confirmationMessage">
+      Thank you for Shopping with us! We have received your details.
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 My Store. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function renderCartSummary() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const cartSummary = document.getElementById('cartSummary');
+      cartSummary.innerHTML = '';
+
+      if (cart.length === 0) {
+        cartSummary.innerHTML = '<p>Your cart is empty.</p>';
+        return;
+      }
+
+      let total = 0;
+      cart.forEach(item => {
+        total += item.price * item.quantity;
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+
+        itemDiv.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" />
+          <div class="cart-item-details">
+            <span>${item.name}</span>
+            <span>${item.quantity} x $${item.price.toFixed(2)}</span>
+            <span><strong>$${(item.price * item.quantity).toFixed(2)}</strong></span>
+          </div>
+        `;
+
+        cartSummary.appendChild(itemDiv);
+      });
+
+      const totalDiv = document.createElement('div');
+      totalDiv.style.textAlign = 'right';
+      totalDiv.style.fontWeight = 'bold';
+      totalDiv.style.marginTop = '1rem';
+      totalDiv.textContent = `Total: $${total.toFixed(2)}`;
+
+      cartSummary.appendChild(totalDiv);
+    }
+
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = this.name.value.trim();
+      const address = this.address.value.trim();
+      const email = this.email.value.trim();
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      if (cart.length === 0) {
+        alert('Your cart is empty. Please add some products before checkout.');
+        return;
+      }
+
+      if (!name || !address || !email) {
+        alert('Please fill in all the fields.');
+        return;
+      }
+
+      // Here you could add more validation if needed
+
+      // Simulate placing the order
+      localStorage.removeItem('cart');
+
+      document.getElementById('confirmationMessage').style.display = 'block';
+      this.style.display = 'none';
+      document.getElementById('cartSummary').style.display = 'none';
+    });
+
+    renderCartSummary();
+  </script>
+</body>
+</html>

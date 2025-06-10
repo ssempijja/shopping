@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple E-Commerce</title>
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+<body>
+  <header>
+    <h1>My Store</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="products.html">Products</a>
+      <a href="checkout.html">Checkout</a> 
+    </nav>
+    <div class="cart-icon">
+      <span>Cart (<span id="cart-count">0</span>)</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">  
+      <h2>Discover Amazing <br><span class="fun">Products</span></h2>
+      <p>Shop the latest trends and exclusive deals.</p>
+      <a href="products.html" class="btn">Shop Now</a>
+    </div>
+    <div class="hero-content-left">
+      
+    </div>
+    
+  </section>
+
+
+  <section class="highlights">
+    <div class="highlight-box">
+      <h3>Quality Products</h3>
+      <p>We offer only the best products with top-notch quality.</p>
+    </div>
+    <div class="highlight-box">
+      <h3>Free Shipping</h3>
+      <p>Enjoy free shipping on all orders over $50.</p>
+    </div>
+    <div class="highlight-box">
+      <h3>Secure Checkout</h3>
+      <p>Your payment information is protected with SSL encryption.</p>
+    </div>
+  </section>
+
+  <section id="product-list" class="product-list"></section>
+
+  <footer>
+    <p>&copy; 2025 My Store. All rights reserved.</p>
+  </footer>
+
+
+  <script src="products.js"></script>
+  <script src="script.js"></script>
+</body>
+<script>
+  // Initialize cart count
+  // document.addEventListener('DOMContentLoaded', () => {
+  //   const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  //   document.getElementById('cart-count   ').textContent = cart.length;
+  // });
+ 
+  </script>
+</html> 
